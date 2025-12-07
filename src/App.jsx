@@ -339,6 +339,16 @@ function App() {
     window.speechSynthesis.speak(utterance)
   }, [settings.voiceFeedback])
 
+  // Play YNTKTS sound effect untuk bicara di luar konteks
+  const playYntktsSound = useCallback(() => {
+    if (!settings.soundEnabled) return
+    try {
+      const audio = new Audio('/yntkts-sound-effect.mp3')
+      audio.volume = 0.7
+      audio.play().catch(e => console.log('Audio play failed:', e))
+    } catch (e) { console.log('YNTKTS audio not supported') }
+  }, [settings.soundEnabled])
+
   const handleConfirmPayment = useCallback(() => {
     const currentCart = cartRef.current
     if (currentCart.length === 0) return
@@ -478,9 +488,24 @@ function App() {
           speak(voice_response || 'Ada yang bisa saya bantu?')
           break
 
+        case 'refuse_pay':
+          setAiResponse(voice_response || 'Yaudah cuci piring aja ya kak~')
+          speak(voice_response || 'Yaudah cuci piring aja ya kak')
+          playSound('success')
+          break
+
+        case 'out_of_context':
+        case 'unclear':
+          // Play YNTKTS sound effect untuk bicara di luar konteks
+          playYntktsSound()
+          setAiResponse(voice_response || 'YNTKTS! Ini warung makan kak, bukan tempat curhat 😅')
+          speak(voice_response || 'Ya ndak tau kok tanya saya. Ini warung makan kak!')
+          break
+
         default:
-          setAiResponse(voice_response || 'Maaf, coba ulangi pesanan Anda.')
-          speak(voice_response || 'Maaf, coba ulangi')
+          playYntktsSound()
+          setAiResponse(voice_response || 'YNTKTS! Coba ulangi pesanan Anda.')
+          speak(voice_response || 'Ya ndak tau kok tanya saya')
       }
 
       if (!hasAISuggestion) {
