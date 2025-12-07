@@ -496,16 +496,14 @@ function App() {
 
         case 'out_of_context':
         case 'unclear':
-          // Play YNTKTS sound effect untuk bicara di luar konteks
+          // Play YNTKTS sound effect saja, tanpa AI ngomong
           playYntktsSound()
-          setAiResponse(voice_response || 'YNTKTS! Ini warung makan kak, bukan tempat curhat 😅')
-          speak(voice_response || 'Ya ndak tau kok tanya saya. Ini warung makan kak!')
+          setAiResponse('YNTKTS! 😅')
           break
 
         default:
           playYntktsSound()
-          setAiResponse(voice_response || 'YNTKTS! Coba ulangi pesanan Anda.')
-          speak(voice_response || 'Ya ndak tau kok tanya saya')
+          setAiResponse('YNTKTS!')
       }
 
       if (!hasAISuggestion) {
