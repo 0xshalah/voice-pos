@@ -17,6 +17,8 @@
 
 > **"Ayam bakar dua sama es teh"** → AI langsung memproses dan menambahkan ke keranjang!
 
+Video Demo: https://youtu.be/FBtDVm4nH8A
+
 ## 💡 Latar Belakang Masalah
 
 Di Indonesia, banyak pelaku UMKM (warung makan, kedai kopi, PKL) menghadapi tantangan:
