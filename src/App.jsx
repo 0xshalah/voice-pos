@@ -385,6 +385,15 @@ function App() {
       return
     }
 
+    // Validasi API Key
+    if (!apiKey || apiKey.trim().length < 10) {
+      setAiResponse('API Key belum diatur. Buka Pengaturan → Konfigurasi AI Otak')
+      speak('API Key belum diatur')
+      setStatusText('Konfigurasi diperlukan')
+      setTimeout(() => setStatusText('Tekan & Bicara'), 3000)
+      return
+    }
+
     setIsProcessingAI(true)
     setAiResponse('')
     setQuickActions([])
@@ -392,7 +401,8 @@ function App() {
     setStatusText('AI memproses...')
 
     try {
-      const result = await processWithGroq(text, cartRef.current)
+      console.log('Processing with API Key:', apiKey ? `${apiKey.substring(0, 10)}...` : 'EMPTY')
+      const result = await processWithGroq(text, cartRef.current, apiKey)
       console.log('AI Response:', result)
 
       const { intent, items, voice_response, suggestion } = result

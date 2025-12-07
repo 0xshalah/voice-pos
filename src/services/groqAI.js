@@ -1,7 +1,5 @@
 // Groq AI Service for Natural Language Understanding - Production Ready
 
-// Gunakan proxy server di production, fallback ke direct API di development
-const PROXY_URL = '/api/groq'
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 
 // Menu untuk context AI
@@ -56,7 +54,11 @@ PENTING:
 - voice_response harus natural dan ramah seperti pelayan warung`
 
 
-export async function processWithGroq(userMessage, currentCart) {
+export async function processWithGroq(userMessage, currentCart, apiKey) {
+  if (!apiKey) {
+    throw new Error('API Key Groq belum diatur. Silakan masukkan di Pengaturan.')
+  }
+
   // Build cart context
   const cartContext = currentCart.length > 0 
     ? `\n\nKERANJANG SAAT INI:\n${currentCart.map(item => `- ${item.quantity}x ${item.name}`).join('\n')}\nTotal: Rp ${currentCart.reduce((sum, item) => sum + item.price * item.quantity, 0).toLocaleString('id-ID')}`
@@ -66,45 +68,30 @@ export async function processWithGroq(userMessage, currentCart) {
   const lastItem = currentCart.length > 0 ? currentCart[currentCart.length - 1].name : null
   const lastItemContext = lastItem ? `\nItem terakhir ditambahkan: ${lastItem}` : ''
 
-  const requestBody = {
-    model: 'llama-3.1-8b-instant',
-    messages: [
-      {
-        role: 'system',
-        content: SYSTEM_PROMPT + cartContext + lastItemContext
-      },
-      {
-        role: 'user',
-        content: userMessage
-      }
-    ],
-    temperature: 0.1,
-    max_tokens: 300,
-    response_format: { type: 'json_object' }
-  }
-
   try {
-    // Coba pakai proxy dulu (production)
-    let response = await fetch(PROXY_URL, {
+    const response = await fetch(GROQ_API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
-    })
-
-    // Fallback ke direct API jika proxy tidak tersedia (development)
-    if (!response.ok && response.status === 404) {
-      const apiKey = import.meta.env.VITE_GROQ_API_KEY
-      if (!apiKey) throw new Error('API Key tidak tersedia')
-      
-      response = await fetch(GROQ_API_URL, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-8b-instant',
+        messages: [
+          {
+            role: 'system',
+            content: SYSTEM_PROMPT + cartContext + lastItemContext
+          },
+          {
+            role: 'user',
+            content: userMessage
+          }
+        ],
+        temperature: 0.1,
+        max_tokens: 300,
+        response_format: { type: 'json_object' }
       })
-    }
+    })
 
     if (!response.ok) {
       const error = await response.json()
