@@ -143,9 +143,18 @@ npm run dev
 - "Selesai"
 - "Udah, checkout"
 
+**Enggan Bayar (Easter Egg 😂):**
+- "Gak punya duit"
+- "Bokek nih"
+- "Gabisa bayar"
+→ AI akan suruh cuci piring!
+
 **Lainnya:**
 - "Berapa totalnya?"
 - "Hapus semua"
+
+**Bicara di Luar Konteks:**
+→ YNTKTS sound effect! 🔊
 
 ## 📊 Arsitektur Sistem
 
@@ -190,6 +199,8 @@ voice-pos/
 - [x] Payment flow
 - [x] Transaction history
 - [x] Dashboard analytics
+- [x] Easter egg: Cuci piring untuk yang enggan bayar 😂
+- [x] YNTKTS sound effect untuk bicara di luar konteks
 - [ ] Multi-language support
 - [ ] Offline mode (PWA)
 - [ ] Printer integration
