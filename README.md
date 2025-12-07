@@ -80,6 +80,7 @@ Output: Proses pembayaran otomatis ✅
 | **React 19** | UI Framework |
 | **Vite 7** | Build Tool |
 | **Tailwind CSS 4** | Styling |
+| **Express.js** | Backend Proxy Server |
 | **Web Speech API** | Speech Recognition |
 | **Groq AI (Llama 3.1)** | Natural Language Processing |
 | **LocalStorage** | Data Persistence |
@@ -90,7 +91,6 @@ Output: Proses pembayaran otomatis ✅
 - Node.js 18+
 - NPM atau Yarn
 - Browser modern (Chrome/Edge recommended)
-- Groq API Key (gratis di [console.groq.com](https://console.groq.com))
 
 ### Quick Start
 
@@ -99,22 +99,46 @@ Output: Proses pembayaran otomatis ✅
 git clone https://github.com/0xshalah/voice-pos.git
 cd voice-pos
 
-# Install dependencies
+# Install frontend dependencies
 npm install
 
-# Setup environment
-cp .env.example .env.local
-# Edit .env.local dan masukkan VITE_GROQ_API_KEY
+# Install backend dependencies
+cd server
+npm install
+cd ..
+```
 
-# Jalankan development server
+### Menjalankan Aplikasi
+
+**Development (2 terminal):**
+
+```bash
+# Terminal 1 - Backend proxy server
+cd server
+npm run dev
+
+# Terminal 2 - Frontend
 npm run dev
 ```
 
-### Environment Variables
+**Atau jalankan keduanya:**
+```bash
+# Install concurrently (opsional)
+npm install -g concurrently
+
+# Jalankan frontend + backend
+concurrently "npm run dev" "cd server && npm run dev"
+```
+
+### Environment Variables (Server)
 
 ```env
-VITE_GROQ_API_KEY=gsk_your_api_key_here
+# server/.env (opsional, sudah ada default)
+GROQ_API_KEY=gsk_your_api_key_here
+PORT=3001
 ```
+
+> ⚠️ **Keamanan:** API Key disimpan di backend server, tidak terekspos ke client-side.
 
 ## 🎮 Cara Penggunaan
 
@@ -156,14 +180,36 @@ VITE_GROQ_API_KEY=gsk_your_api_key_here
                                                           │
                                                           ▼
 ┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│   Update Cart   │◀────│   Parse JSON     │◀────│   Groq AI API   │
-└─────────────────┘     └──────────────────┘     └─────────────────┘
+│   Update Cart   │◀────│   Parse JSON     │◀────│  Backend Proxy  │
+└─────────────────┘     └──────────────────┘     └────────┬────────┘
+                                                          │
+                                                          ▼
+                                               ┌─────────────────────┐
+                                               │   Groq AI API       │
+                                               │   (API Key Secure)  │
+                                               └─────────────────────┘
                                                           │
                                                           ▼
                                                ┌─────────────────────┐
                                                │  Voice Response     │
                                                │  (Text-to-Speech)   │
                                                └─────────────────────┘
+```
+
+## 📁 Struktur Project
+
+```
+voice-pos/
+├── server/                 # Backend proxy server
+│   ├── index.js           # Express server (API key tersimpan di sini)
+│   └── package.json
+├── src/
+│   ├── services/
+│   │   └── groqAI.js      # AI service (calls proxy)
+│   ├── App.jsx            # Main React component
+│   └── ...
+├── package.json           # Frontend dependencies
+└── vite.config.js         # Vite config dengan proxy
 ```
 
 ## 🔮 Roadmap

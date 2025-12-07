@@ -185,6 +185,8 @@ function PaymentSuccessModal({ isOpen, onClose, cart, total, onPrint }) {
     </div>
   )
 }
+ 
+
 
 // History Modal
 function HistoryModal({ isOpen, onClose, history }) {
@@ -383,14 +385,6 @@ function App() {
       return
     }
 
-    if (!apiKey) {
-      setAiResponse('API Key belum diatur. Klik ikon ⚙️ untuk konfigurasi.')
-      speak('API Key belum diatur')
-      setStatusText('Konfigurasi diperlukan')
-      setTimeout(() => setStatusText('Tekan & Bicara'), 3000)
-      return
-    }
-
     setIsProcessingAI(true)
     setAiResponse('')
     setQuickActions([])
@@ -398,7 +392,7 @@ function App() {
     setStatusText('AI memproses...')
 
     try {
-      const result = await processWithGroq(text, cartRef.current, apiKey)
+      const result = await processWithGroq(text, cartRef.current)
       console.log('AI Response:', result)
 
       const { intent, items, voice_response, suggestion } = result
